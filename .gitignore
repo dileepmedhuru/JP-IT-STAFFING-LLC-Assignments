@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+env/
+venv/
+.DS_Store
+
+# Exclude large video & zip files from Git (>100MB limit)
+*.mp4
+*.zip
+*.avi
+*.mov

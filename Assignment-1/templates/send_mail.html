@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Campaign | EmailPro{% endblock %}
+
+{% block content %}
+
+<!-- Two column layout: Main Form | Campaign Info -->
+<div style="display: grid; grid-template-columns: 3fr 2fr; gap: 2rem; align-items: start;">
+
+  <!-- LEFT: Create New Campaign Card -->
+  <div class="emailpro-card">
+    <h2 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px;">
+      <i class="fa-solid fa-paper-plane" style="color: var(--primary-color);"></i>
+      Create New Campaign
+    </h2>
+
+    <form id="campaignForm" action="{{ url_for('send_mail_action') }}" method="POST" enctype="multipart/form-data">
+
+      <!-- Email Subject -->
+      <div class="form-group">
+        <label class="form-label">Email Subject</label>
+        <input type="text" id="subjectInput" name="subject"
+               class="composer-input"
+               value="{{ settings.default_subject or 'Latest Swinging Bowls' }}"
+               placeholder="Enter email subject line..."
+               required>
+      </div>
+
+      <!-- Target Audience -->
+      <div class="form-group">
+        <label class="form-label">Target Audience</label>
+        <select id="audienceSelect" name="audience" class="composer-input">
+          <option value="Business" {% if settings.default_audience == 'Business' %}selected{% endif %}>Business Recipients</option>
+          <option value="Individuals" {% if settings.default_audience == 'Individuals' %}selected{% endif %}>Individual Recipients</option>
+          <option value="All" {% if settings.default_audience == 'All' %}selected{% endif %}>Both</option>
+        </select>
+      </div>
+
+      <!-- Email Content -->
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <label class="form-label" style="margin-bottom: 0;">Email Content</label>
+          <button type="button" id="aiGenBtn" onclick="generateAiCopy()" class="ai-gen-btn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate Email
+          </button>
+        </div>
+        <textarea id="messageInput" name="message" class="composer-textarea" rows="7" required>{{ settings.default_message or 'Hello, We would like to introduce our Singing Bowl products. Thank you.' }}</textarea>
+      </div>
+
+      <!-- Attachment -->
+      <div class="form-group">
+        <label class="form-label">Attachment <span style="font-weight: 400; color: #64748b;">(PDF, PPTX, DOCX)</span></label>
+        <div class="attachment-box">
+          <i class="fa-solid fa-paperclip" style="font-size: 1.4rem; color: var(--primary-color);"></i>
+          <input type="file" id="attachmentInput" name="attachment" accept=".pdf,.pptx,.docx">
+        </div>
+      </div>
+
+      <!-- Launch Buttons -->
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+        <button type="submit" name="mode" value="live" class="btn-emailpro btn-emerald" style="flex: 2; padding: 0.95rem; font-size: 1rem;">
+          <i class="fa-solid fa-rocket"></i> Launch Campaign
+        </button>
+
+        <button type="submit" name="mode" value="dry_run" class="btn-emailpro btn-outline" style="flex: 1; padding: 0.95rem; font-size: 0.9rem;">
+          <i class="fa-solid fa-flask"></i> Dry Run Test
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- RIGHT: Campaign Information Card -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+    <!-- Campaign Information -->
+    <div class="emailpro-card">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: white; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-circle-info" style="color: var(--primary-color);"></i>
+        Campaign Information
+      </h3>
+
+      <div class="info-row">
+        <span class="info-label"><i class="fa-solid fa-envelope-open-text" style="color: var(--primary-color);"></i> Email Source:</span>
+        <span class="info-value">AI Classified Recipient Lists</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label"><i class="fa-solid fa-users" style="color: #8b5cf6;"></i> Audience Options:</span>
+        <span class="info-value">Business, Individual or Both</span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label"><i class="fa-solid fa-file-powerpoint" style="color: #10b981;"></i> Presentation Attachment:</span>
+        <span class="info-value">presentation.pptx (Singing Bowls)</span>
+      </div>
+
+      <div class="info-row" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+        <span class="info-label"><i class="fa-solid fa-paper-plane" style="color: #06b6d4;"></i> After Send:</span>
+        <span class="info-value">Auto-redirects to Reports</span>
+      </div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="emailpro-card">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: white; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-eye" style="color: #06b6d4;"></i> Preview
+      </h3>
+
+      <div class="preview-row">
+        <span class="preview-label">Recipients</span>
+        <div class="preview-value" id="previewRecipients">{{ stats.business_count }} Business</div>
+      </div>
+
+      <div class="preview-row">
+        <span class="preview-label">Attachment</span>
+        <div class="preview-value" id="previewAttachment">presentation.pptx</div>
+      </div>
+
+      <div class="preview-row">
+        <span class="preview-label">Subject</span>
+        <div class="preview-value" id="previewSubject">{{ settings.default_subject or 'Latest Swinging Bowls' }}</div>
+      </div>
+
+      <div class="preview-row" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+        <span class="preview-label">Message</span>
+        <div class="preview-value" id="previewMessage" style="white-space: pre-wrap; font-size: 0.8rem; color: #94a3b8; max-height: 120px; overflow-y: auto;">{{ settings.default_message or 'Hello, We would like to introduce our Singing Bowl products. Thank you.' }}</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const subjectInput   = document.getElementById('subjectInput');
+  const messageInput   = document.getElementById('messageInput');
+  const audienceSelect = document.getElementById('audienceSelect');
+  const attachmentInput = document.getElementById('attachmentInput');
+
+  const previewSubject    = document.getElementById('previewSubject');
+  const previewMessage    = document.getElementById('previewMessage');
+  const previewRecipients = document.getElementById('previewRecipients');
+  const previewAttachment = document.getElementById('previewAttachment');
+
+  const recipientMap = {
+    'Business':    '{{ stats.business_count }} Business Recipients',
+    'Individuals': '{{ stats.individual_count }} Individual Recipients',
+    'All':         '{{ stats.total_emails }} Recipients (Both)'
+  };
+
+  subjectInput.addEventListener('input', e => previewSubject.textContent = e.target.value || '—');
+  messageInput.addEventListener('input', e => previewMessage.textContent = e.target.value || '—');
+  audienceSelect.addEventListener('change', e => previewRecipients.textContent = recipientMap[e.target.value] || '0');
+  attachmentInput.addEventListener('change', e => {
+    previewAttachment.textContent = e.target.files.length > 0 ? e.target.files[0].name : 'presentation.pptx';
+  });
+
+  function generateAiCopy() {
+    const btn = document.getElementById('aiGenBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+    btn.disabled = true;
+
+    fetch('/api/generate-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: subjectInput.value || 'Singing Bowls', audience: audienceSelect.value })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.subject) { subjectInput.value = data.subject; previewSubject.textContent = data.subject; }
+      if (data.content) { messageInput.value = data.content; previewMessage.textContent = data.content; }
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Generated!';
+      setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate Email'; btn.disabled = false; }, 2000);
+    })
+    .catch(() => {
+      btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate Email';
+      btn.disabled = false;
+    });
+  }
+</script>
+{% endblock %}

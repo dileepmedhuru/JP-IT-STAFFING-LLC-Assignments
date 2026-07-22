@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}EXPORT Automation System | EmailPro{% endblock %}
+
+{% block content %}
+
+<!-- ==================== Section 2: QUICK ACTIONS (FIRST) ==================== -->
+<section style="margin-bottom: 4rem;">
+  <div class="section-header">
+    <h2 class="section-title">Quick Actions</h2>
+    <p class="section-subtitle">Automate your complete email outreach pipeline in one click</p>
+  </div>
+
+  <div class="quick-actions-grid">
+
+    <!-- Card 1: Upload CSV -->
+    <div class="emailpro-card action-card">
+      <div>
+        <div class="action-icon" style="background: rgba(46,168,255,0.15); color: #2ea8ff;">
+          <i class="fa-solid fa-file-csv"></i>
+        </div>
+        <h3 class="action-title">Upload CSV</h3>
+        <p class="action-desc">Upload Email.csv containing customer or business email lists.</p>
+      </div>
+      <a href="{{ url_for('upload_page') }}" class="btn-emailpro" style="width: 100%;">
+        <i class="fa-solid fa-upload"></i> Upload
+      </a>
+    </div>
+
+    <!-- Card 2: Remove Duplicates -->
+    <div class="emailpro-card action-card">
+      <div>
+        <div class="action-icon" style="background: rgba(6,182,212,0.15); color: #06b6d4;">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+        </div>
+        <h3 class="action-title">Remove Duplicates</h3>
+        <p class="action-desc">Automatically remove duplicate email addresses.</p>
+      </div>
+      <form action="{{ url_for('remove_duplicates_action') }}" method="POST" style="width: 100%;">
+        <button type="submit" class="btn-emailpro btn-cyan" style="width: 100%;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Clean List
+        </button>
+      </form>
+    </div>
+
+    <!-- Card 3: AI Classification -->
+    <div class="emailpro-card action-card">
+      <div>
+        <div class="action-icon" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <h3 class="action-title">AI Classification</h3>
+        <p class="action-desc">Categorise emails into Business and Individual recipients.</p>
+      </div>
+      <a href="{{ url_for('classify_page') }}" class="btn-emailpro btn-purple" style="width: 100%;">
+        <i class="fa-solid fa-brain"></i> Classify
+      </a>
+    </div>
+
+    <!-- Card 4: Send Campaign -->
+    <div class="emailpro-card action-card">
+      <div>
+        <div class="action-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">
+          <i class="fa-solid fa-paper-plane"></i>
+        </div>
+        <h3 class="action-title">Send Campaign</h3>
+        <p class="action-desc">Launch personalised email campaigns with attachments and tracking.</p>
+      </div>
+      <a href="{{ url_for('send_mail_page') }}" class="btn-emailpro btn-emerald" style="width: 100%;">
+        <i class="fa-solid fa-rocket"></i> Send Emails
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== Section 3: STATISTICS CARDS ==================== -->
+<section style="margin-bottom: 4rem;">
+  <div class="stats-cards-grid">
+
+    <div class="emailpro-card stat-card-widget">
+      <div class="stat-icon" style="color: #2ea8ff;"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-number">{{ stats.total_emails }}</div>
+      <div class="stat-label">Total Buyers</div>
+    </div>
+
+    <div class="emailpro-card stat-card-widget">
+      <div class="stat-icon" style="color: #8b5cf6;"><i class="fa-solid fa-building"></i></div>
+      <div class="stat-number">{{ stats.business_count }}</div>
+      <div class="stat-label">Business Emails</div>
+    </div>
+
+    <div class="emailpro-card stat-card-widget">
+      <div class="stat-icon" style="color: #10b981;"><i class="fa-solid fa-user"></i></div>
+      <div class="stat-number">{{ stats.individual_count }}</div>
+      <div class="stat-label">Individual Emails</div>
+    </div>
+
+    <div class="emailpro-card stat-card-widget">
+      <div class="stat-icon" style="color: #06b6d4;"><i class="fa-solid fa-chart-line"></i></div>
+      <div class="stat-number">{{ stats.success_rate }}%</div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== Section 4: WORKFLOW ==================== -->
+<section style="margin-bottom: 2rem;">
+  <div class="section-header">
+    <h2 class="section-title">Workflow</h2>
+    <p class="section-subtitle">5-step automated pipeline from raw buyer CSV to campaign report</p>
+  </div>
+
+  <div class="emailpro-card" style="padding: 2.5rem;">
+    <div class="workflow-container">
+
+      <div class="workflow-step">
+        <div class="step-number">1</div>
+        <div class="step-title">Upload Leads</div>
+      </div>
+
+      <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+      <div class="workflow-step">
+        <div class="step-number">2</div>
+        <div class="step-title">Validate Emails</div>
+      </div>
+
+      <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+      <div class="workflow-step">
+        <div class="step-number">3</div>
+        <div class="step-title">AI Classification</div>
+      </div>
+
+      <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+      <div class="workflow-step">
+        <div class="step-number">4</div>
+        <div class="step-title">Send Campaign</div>
+      </div>
+
+      <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+      <div class="workflow-step">
+        <div class="step-number">5</div>
+        <div class="step-title">Reports</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

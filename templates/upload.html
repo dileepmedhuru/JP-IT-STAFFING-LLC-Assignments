@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Buyer Dataset | EmailPro{% endblock %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="section-header">
+  <h1 class="section-title">Upload Buyer Dataset</h1>
+  <p class="section-subtitle">Import CSV files containing buyers to begin your campaign pipeline.</p>
+</div>
+
+<!-- Upload Card -->
+<div class="emailpro-card upload-card" style="margin-bottom: 3rem;">
+  <form action="{{ url_for('upload_action') }}" method="POST" enctype="multipart/form-data">
+
+    <div class="upload-dropzone">
+      <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+      <h3 class="upload-heading">Choose CSV File</h3>
+      <p class="upload-subtext">Drag & drop or click to select your buyer CSV dataset</p>
+
+      <div style="margin-bottom: 1.5rem;">
+        <input type="file" name="csv_file" accept=".csv" required class="upload-file-input">
+      </div>
+
+      <button type="submit" class="btn-emailpro" style="padding: 0.85rem 2.4rem; font-size: 1rem;">
+        <i class="fa-solid fa-upload"></i> Upload Dataset
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Dataset Information Cards (after upload) -->
+<div class="stats-cards-grid" style="margin-bottom: 2.5rem;">
+
+  <div class="emailpro-card stat-card-widget">
+    <div class="stat-icon" style="color: #2ea8ff;"><i class="fa-solid fa-envelope"></i></div>
+    <div class="stat-number">{{ summary.total if summary else stats.total_emails }}</div>
+    <div class="stat-label">Total Emails</div>
+  </div>
+
+  <div class="emailpro-card stat-card-widget">
+    <div class="stat-icon" style="color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="stat-number">{{ summary.valid if summary else stats.total_emails }}</div>
+    <div class="stat-label">Valid Emails</div>
+  </div>
+
+  <div class="emailpro-card stat-card-widget">
+    <div class="stat-icon" style="color: #f43f5e;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="stat-number">{{ summary.invalid if summary else 0 }}</div>
+    <div class="stat-label">Invalid Emails</div>
+  </div>
+
+  <div class="emailpro-card stat-card-widget">
+    <div class="stat-icon" style="color: #8b5cf6;"><i class="fa-solid fa-copy"></i></div>
+    <div class="stat-number">{{ summary.duplicates if summary else 0 }}</div>
+    <div class="stat-label">Duplicates</div>
+  </div>
+
+</div>
+
+<!-- Email Table (Columns: Email | Company | Country | Source) -->
+<div class="emailpro-card" style="margin-bottom: 2.5rem;">
+
+  <div class="table-header-row">
+    <h3 class="table-heading"><i class="fa-solid fa-table" style="color: var(--primary-color); margin-right: 8px;"></i> Imported Buyers</h3>
+    <span class="table-count">{{ emails|length }} records</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="emailpro-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Company</th>
+          <th>Country</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if emails %}
+          {% for item in emails %}
+            <tr>
+              <td style="font-family: monospace; color: #2ea8ff; font-weight: 600;">{{ item.email }}</td>
+              <td>
+                {% if "@" in item.email %}
+                  {{ item.email.split('@')[1].split('.')[0].capitalize() }} Corp
+                {% else %}N/A{% endif %}
+              </td>
+              <td>International</td>
+              <td>
+                <span class="badge badge-purple">CSV Upload</span>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="4" class="table-empty-msg">No buyer records found. Upload a CSV file above.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Action Buttons -->
+<div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+  <form action="{{ url_for('remove_duplicates_action') }}" method="POST">
+    <button type="submit" class="btn-emailpro btn-outline">
+      <i class="fa-solid fa-filter-circle-xmark"></i> Remove Duplicates
+    </button>
+  </form>
+
+  <a href="{{ url_for('classify_page') }}" class="btn-emailpro btn-purple">
+    <i class="fa-solid fa-brain"></i> Run Classification
+  </a>
+</div>
+
+{% endblock %}
