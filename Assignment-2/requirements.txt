@@ -1,0 +1,7 @@
+flask
+flask-cors
+flask-sqlalchemy
+google-search-results
+beautifulsoup4
+requests
+python-dotenv

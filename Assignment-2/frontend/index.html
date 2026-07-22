@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Singing Bowl Export Desk</title>
+  <meta name="description" content="Find real business emails, manage buyer leads, and send focused catalog outreach from one clean dashboard."/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════ -->
+<header class="app-header">
+  <div class="header-brand">
+    <div class="logo-box">SB</div>
+    <div class="brand-text">
+      <h1>Singing Bowl Export Desk</h1>
+      <p>Find real business emails, manage buyer leads, and send focused catalog outreach from one clean dashboard.</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-gray" id="export-btn" onclick="exportCSV()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Export CSV
+    </button>
+    <button class="btn btn-red" id="reset-btn" onclick="resetDatabase()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+      </svg>
+      Reset Database
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ── Workflow Steps Banner ────────────────────────────── -->
+  <div class="workflow-banner" id="workflow-banner">
+    <div class="workflow-step" id="step1">
+      <div class="step-num">1</div>
+      <div class="step-label">Search Leads</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="workflow-step" id="step2">
+      <div class="step-num">2</div>
+      <div class="step-label">Upload PDF Catalog</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="workflow-step" id="step3">
+      <div class="step-num">3</div>
+      <div class="step-label">Send Bulk Email</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="workflow-step" id="step4">
+      <div class="step-num">4</div>
+      <div class="step-label">Export CSV</div>
+    </div>
+  </div>
+
+  <!-- ── KPI Cards ─────────────────────────────────────────── -->
+  <section class="kpi-grid" aria-label="Dashboard Statistics">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Leads</div>
+      <div class="kpi-value kpi-gold" id="kpi-total">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Contacted</div>
+      <div class="kpi-value kpi-blue" id="kpi-contacted">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Emails Sent</div>
+      <div class="kpi-value kpi-green" id="kpi-sent">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Failed</div>
+      <div class="kpi-value kpi-red" id="kpi-failed">0</div>
+    </div>
+  </section>
+
+  <!-- ── Connection Status ─────────────────────────────────── -->
+  <section class="conn-grid" aria-label="Connection Status">
+    <div class="conn-card">
+      <div class="conn-left">
+        <div class="conn-type">Search API</div>
+        <div class="conn-name" id="conn-search-name">Loading…</div>
+      </div>
+      <span class="conn-badge" id="conn-search-badge">
+        <span class="status-dot"></span>
+        <span id="conn-search-text">…</span>
+      </span>
+    </div>
+    <div class="conn-card">
+      <div class="conn-left">
+        <div class="conn-type">Send Mail</div>
+        <div class="conn-name" id="conn-mail-name">Loading…</div>
+      </div>
+      <span class="conn-badge" id="conn-mail-badge">
+        <span class="status-dot"></span>
+        <span id="conn-mail-text">…</span>
+      </span>
+    </div>
+  </section>
+
+  <!-- ── Two-column: Search Config  |  Email Config ─────────── -->
+  <div class="panel-row">
+
+    <!-- Search Configuration -->
+    <div class="panel">
+      <div class="panel-title">
+        Search Configuration
+      </div>
+
+      <div id="search-alert-area"></div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-keywords">Search Keywords</label>
+        <input type="text" id="inp-keywords" value="singing bowls wholesale"
+               placeholder="e.g. singing bowls wholesale"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-countries">Countries</label>
+        <input type="text" id="inp-countries" value="USA, UK"
+               placeholder="e.g. USA, UK, Canada"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="inp-limit">Limit</label>
+          <input type="number" id="inp-limit" value="5" min="1" max="50"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-seed">Seed URLs (one per line)</label>
+        <textarea id="inp-seed" rows="3" placeholder="https://example.com&#10;https://anothersite.com"></textarea>
+      </div>
+
+      <button class="btn btn-green btn-green-full" id="search-btn" onclick="searchLeads()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Search Leads
+      </button>
+    </div>
+
+    <!-- Email & Catalog Configuration -->
+    <div class="panel">
+      <div class="panel-title">Email &amp; Catalog Configuration</div>
+
+      <div id="email-alert-area"></div>
+
+      <!-- PDF Upload -->
+      <div class="pdf-upload-row" id="pdf-upload-row">
+        <div class="pdf-icon">📄</div>
+        <div class="pdf-info">
+          <div class="pdf-name" id="pdf-name-display">
+            <span class="pdf-placeholder">No catalog uploaded</span>
+          </div>
+          <a class="pdf-url" id="pdf-url-link" href="#" target="_blank" style="display:none;"></a>
+        </div>
+        <label for="pdf-file-input" class="btn btn-gray btn-sm" style="cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload PDF
+        </label>
+        <input type="file" id="pdf-file-input" accept=".pdf" style="display:none;" onchange="uploadPDF(this)"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-subject">Email Subject</label>
+        <input type="text" id="inp-subject" value="Handcrafted Singing Bowl Export Catalog"
+               placeholder="Email subject line"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inp-template">
+          HTML Template
+          <span style="font-weight:400;color:#9ca3af;margin-left:6px;">
+            Available: {{ownerName}} {{businessName}} {{whatsappNumber}} {{unsubscribeUrl}} {{country}}
+          </span>
+        </label>
+        <textarea id="inp-template" rows="7" spellcheck="false" id="inp-template"></textarea>
+      </div>
+
+      <button class="btn btn-green btn-green-full" id="bulk-btn" onclick="sendBulkEmail()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Send Bulk Email
+      </button>
+
+      <!-- Progress log -->
+      <div class="progress-log" id="progress-log" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ── Leads Table ─────────────────────────────────────────── -->
+  <section class="table-panel" aria-label="Leads Table">
+    <div class="table-topbar">
+      <span class="table-topbar-title">
+        Leads — <span id="leads-count">0</span> total
+      </span>
+      <button class="btn btn-gray btn-sm" onclick="loadLeads()" title="Refresh table">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+    <div class="table-scroll">
+      <table class="leads-table" id="leads-table">
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Owner</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Country</th>
+            <th>Source</th>
+            <th>Score</th>
+            <th>Contacted</th>
+            <th>Mail</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="leads-tbody">
+          <tr class="empty-state">
+            <td colspan="10">No leads yet. Use Search Leads to import data.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
